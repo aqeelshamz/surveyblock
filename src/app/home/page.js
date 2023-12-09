@@ -8,6 +8,7 @@ import { FiBox, FiFileText, FiPlusCircle } from "react-icons/fi";
 import { v4 as uuidv4 } from "uuid";
 import { weavedbContractId, bgColors } from "../../utils/util";
 import Section from "../../components/Animate";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function Home() {
   const [responses, setResponses] = useState([]);
@@ -147,3 +148,5 @@ export default function Home() {
     </div>
   )
 }
+
+export const dynamic = 'force-dynamic'
