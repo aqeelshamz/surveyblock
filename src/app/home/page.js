@@ -4,8 +4,10 @@ import Navbar from "../../components/Navbar";
 import WeaveDB from "weavedb-sdk";
 import { useAccount } from "wagmi";
 import { CiCirclePlus } from "react-icons/ci";
-import { FiBox, FiPlusCircle } from "react-icons/fi";
+import { FiBox, FiFileText, FiPlusCircle } from "react-icons/fi";
 import { v4 as uuidv4 } from "uuid";
+import { weavedbContractId, bgColors } from "../../utils/util";
+import Section from "../../components/Animate";
 
 export default function Home() {
   const [responses, setResponses] = useState([]);
@@ -24,7 +26,7 @@ export default function Home() {
   const initDB = async () => {
     setLoadingSurveys(true);
     const db = new WeaveDB({
-      contractTxId: "-8FM6hm-v1I2baCD0_axEvJP7qQj3rNYz_4_crHsRfI",
+      contractTxId: weavedbContractId,
     });
     console.log("DB initing...")
     console.log(await db.init());
@@ -33,7 +35,7 @@ export default function Home() {
     if (address) {
       const responses = await db.cget("responses");
       setResponses(responses);
-      // setSurveys(await db.cget("surveys", ["author"], ["author", "==", address.toLowerCase()]));
+      setSurveys(await db.cget("surveys", ["author"], ["author", "==", address.toLowerCase()]));
       setUserNotLoggedIn(false);
     } else {
       setUserNotLoggedIn(true);
@@ -138,7 +140,7 @@ export default function Home() {
             <form method="dialog">
               <button className="btn">Close</button>
             </form>
-              <button className="btn btn-primary ml-2" onClick={createSurvey}>Create Survey</button>
+            <button className="btn btn-primary ml-2" onClick={createSurvey}>Create Survey</button>
           </div>
         </div>
       </dialog>

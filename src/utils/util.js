@@ -1,5 +1,7 @@
 import { ethers } from "ethers";
 
+const weavedbContractId = "-8FM6hm-v1I2baCD0_axEvJP7qQj3rNYz_4_crHsRfI";
+
 const formGenerationPrompt = `
 You're an intelligent form generator.
 You can generate forms according to prompts sent by the user.
@@ -43,4 +45,4 @@ const bgColors = {
 	z: ["#f12711", "#f5af19"],
 };
 
-export { formGenerationPrompt, bgColors };
+export { formGenerationPrompt, bgColors, weavedbContractId };
