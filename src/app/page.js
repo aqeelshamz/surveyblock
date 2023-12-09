@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import {FiBox} from "react-icons/fi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function Home() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function Home() {
   return (
     <main className="w-full h-[100vh] flex items-center justify-center">
       <div className="flex flex-col items-center">
-        <h1 className="text-4xl font-bold flex"><FiBox className="mr-2"/> SurveryBlock</h1>
+        <h1 className="text-4xl font-bold flex items-center"><FiBox className="mr-2"/> SurveryBlock</h1>
         <h1 className="text-xl mt-2">Decentralised Survey</h1>
         {domLoaded ? (
           <div className="mt-10">
