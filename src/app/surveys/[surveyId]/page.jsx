@@ -18,8 +18,10 @@ import { FaRegFile } from "react-icons/fa";
 import { TbPhone } from "react-icons/tb";
 import Image from "next/image";
 import { weavedbContractId } from "../../../utils/util";
+import { LogInWithAnonAadhaar, useAnonAadhaar } from "anon-aadhaar-react";
 
 export default function Survey({ params: { surveyId } }) {
+	const [anonAadhaar] = useAnonAadhaar();
 	let provider = new ethers.BrowserProvider(window.ethereum);
 	const [survey, setSurvey] = useState();
 	const [db, setDB] = useState();
@@ -27,9 +29,6 @@ export default function Survey({ params: { surveyId } }) {
 	const [uploadedURL, setUploadedURL] = useState(null);
 
 	const { address } = useAccount();
-
-	const [validatingNFT, setValidatingNFT] = useState(false);
-	const [isNFTValid, setIsNFTValid] = useState(true);
 
 	const initDB = async () => {
 		setLoadingSurveyData(true);
@@ -39,14 +38,13 @@ export default function Survey({ params: { surveyId } }) {
 		await db.init();
 		const survey = (await db.get("surveys", ["id", "==", surveyId]))[0];
 		setSurvey(survey);
-		if (survey?.nftContractAddress !== "" && survey?.nftContractAddress !== null && survey?.nftContractAddress !== undefined) {
-			setValidatingNFT(true);
-			document.getElementById("my_modal_2").showModal();
+		if (anonAadhaar?.status === "logged-out") {
+			// document.getElementById("my_modal_2").showModal();
 
-			setTimeout(async () => {
-				setIsNFTValid(await validateNft(survey?.nftContractAddress));
-				setValidatingNFT(false);
-			}, 2000);
+			// setTimeout(async () => {
+			// 	// setIsNFTValid(await validateNft(survey?.nftContractAddress));
+			// 	setVerifyingAadhaar(false);
+			// }, 2000);
 		}
 		console.log((await db.get("surveys", ["id", "==", surveyId]))[0]);
 		setDB(db);
@@ -148,32 +146,9 @@ export default function Survey({ params: { surveyId } }) {
 		toast.success("Survey submitted successfully!");
 	};
 
-	const validateNft = async (contractAddress) => {
-		const contract = new ethers.Contract(contractAddress, NFT_abi, provider);
-
-		try {
-			let balance = await contract.balanceOf(address);
-
-			// the balance is in the this survey '1n' how to convert it to a number?
-			balance = balance.toString().split("n")[0];
-			console.log(balance);
-
-			if (balance > 0) {
-				return true;
-			} else {
-				return false;
-			}
-
-
-		} catch (error) {
-			console.error("Error fetching balance:", error);
-			return false;
-		}
-	};
-
 	return (
 		<main>
-			{loadingSurveyData ? "" : <div className="mb-5"><ConnectButton /></div>}
+			{loadingSurveyData ? "" : <div className="mb-5 flex justify-between	items-center"><ConnectButton />{anonAadhaar?.status === "logged-in" ? <div className="flex items-center"><p className="text-xl font-semibold mr-5">Aadhaar Verified ✅ </p><LogInWithAnonAadhaar/></div> : ""}</div>}
 			{surveySubmitted ? <div className="bg-white rounded-xl p-10">
 				<div className="row1 title">
 					<div className="flex items-center gap-3">
@@ -205,78 +180,82 @@ export default function Survey({ params: { surveyId } }) {
 						</div>
 					</div>
 					<div className="inputs min-w-[50vw]">
-						{!isNFTValid || validatingNFT ? "" : survey?.fields?.map((field, index) => {
-							return (
-								<div className="inputrow" key={index}>
-									<div className="flex items-center gap-3 mt-5">
-										<label className="flex items-center text-lg font-semibold">{({
-											"text": <MdOutlineShortText className="mr-2" />,
-											"longtext": <BsTextareaResize className="mr-2" />,
-											"multiplechoice": <BiSelectMultiple className="mr-2" />,
-											"numbers": <MdOutlineNumbers className="mr-2" />,
-											"date": <BsCalendar2Date className="mr-2" />,
-											"file": <FaRegFile className="mr-2" />,
-											"phone": <TbPhone className="mr-2" />,
-											"payment": <FiCreditCard className="mr-2" />,
-											"email": <FiAtSign className="mr-2" />,
-										})[field?.type] ?? <MdOutlineShortText className="mr-2" />}{field?.title} <span className="ml-2 font-semibold text-red-500">*</span></label>
-									</div>
-									<div className="flex items-center gap-3 mt-3">
-										{field?.type === "multiplechoice" ? (
-											<select className="w-full max-w-4xl select select-bordered" onChange={(e) => {
-												answers[field?.id] = e.target.value;
-												setAnswers({ ...answers });
-											}}>
-												{field?.choices?.map((option, id) => {
-													return <option key={id} value={option}>{option}</option>;
-												})}
-											</select>
-										) : field?.type === "longtext" ? (
-											<textarea
-												className="w-full max-w-4xl textarea textarea-bordered"
-												placeholder={field?.title}
-												onChange={(e) => {
+						{anonAadhaar.status === "logging-in" || anonAadhaar.status === "logged-out" ?
+							<div className="flex flex-col mt-10">
+								<p className="mb-3">Please verify your identity to continue.</p>
+								<LogInWithAnonAadhaar />
+							</div> : survey?.fields?.map((field, index) => {
+								return (
+									<div className="inputrow" key={index}>
+										<div className="flex items-center gap-3 mt-5">
+											<label className="flex items-center text-lg font-semibold">{({
+												"text": <MdOutlineShortText className="mr-2" />,
+												"longtext": <BsTextareaResize className="mr-2" />,
+												"multiplechoice": <BiSelectMultiple className="mr-2" />,
+												"numbers": <MdOutlineNumbers className="mr-2" />,
+												"date": <BsCalendar2Date className="mr-2" />,
+												"file": <FaRegFile className="mr-2" />,
+												"phone": <TbPhone className="mr-2" />,
+												"payment": <FiCreditCard className="mr-2" />,
+												"email": <FiAtSign className="mr-2" />,
+											})[field?.type] ?? <MdOutlineShortText className="mr-2" />}{field?.title} <span className="ml-2 font-semibold text-red-500">*</span></label>
+										</div>
+										<div className="flex items-center gap-3 mt-3">
+											{field?.type === "multiplechoice" ? (
+												<select className="w-full max-w-4xl select select-bordered" onChange={(e) => {
 													answers[field?.id] = e.target.value;
 													setAnswers({ ...answers });
-												}}
-											></textarea>
-										) : field?.type === "payment" ? (
-											!(answers[field?.id]) ? <button
-												className="btn btn-primary"
-												onClick={() => {
-													console.log(field?.amount);
-													pay(field?.amount, field?.id);
-												}}
-											>
-												<FiCreditCard /> Pay {field?.amount} HBR
-											</button> : <p className="font-semibold text-md ml-2">✅ Paid {field?.amount} HBR</p>
-										) : field?.type === "file" ? (answers[field?.id]) ? <p className="font-semibold text-md ml-2">✅ File uploaded: <Link className="underline text-blue-500" href={answers[field?.id]} target="_blank">{answers[field?.id]}</Link></p> : (
-											uploadingFile ? <div className="flex items-center">
-												<span className="loading loading-spinner loading-md"></span>
-												<p className="font-semibold text-md ml-2">Uploading file...</p>
-											</div> : <input type="file" multiple onChange={async (event) => {
-												const url = await handleFileUpload(event);
-												console.log("URL: ", url);
-												answers[field?.id] = url;
-												setAnswers({ ...answers });
-											}} />
-										) : (
-											<input
-												className="w-full max-w-4xl input input-bordered"
-												type={field?.type}
-												placeholder={field?.title}
-												onChange={(e) => {
-													answers[field?.id] = e.target.value;
+												}}>
+													{field?.choices?.map((option, id) => {
+														return <option key={id} value={option}>{option}</option>;
+													})}
+												</select>
+											) : field?.type === "longtext" ? (
+												<textarea
+													className="w-full max-w-4xl textarea textarea-bordered"
+													placeholder={field?.title}
+													onChange={(e) => {
+														answers[field?.id] = e.target.value;
+														setAnswers({ ...answers });
+													}}
+												></textarea>
+											) : field?.type === "payment" ? (
+												!(answers[field?.id]) ? <button
+													className="btn btn-primary"
+													onClick={() => {
+														console.log(field?.amount);
+														pay(field?.amount, field?.id);
+													}}
+												>
+													<FiCreditCard /> Pay {field?.amount} HBR
+												</button> : <p className="font-semibold text-md ml-2">✅ Paid {field?.amount} HBR</p>
+											) : field?.type === "file" ? (answers[field?.id]) ? <p className="font-semibold text-md ml-2">✅ File uploaded: <Link className="underline text-blue-500" href={answers[field?.id]} target="_blank">{answers[field?.id]}</Link></p> : (
+												uploadingFile ? <div className="flex items-center">
+													<span className="loading loading-spinner loading-md"></span>
+													<p className="font-semibold text-md ml-2">Uploading file...</p>
+												</div> : <input type="file" multiple onChange={async (event) => {
+													const url = await handleFileUpload(event);
+													console.log("URL: ", url);
+													answers[field?.id] = url;
 													setAnswers({ ...answers });
-												}}
-											/>
-										)}
+												}} />
+											) : (
+												<input
+													className="w-full max-w-4xl input input-bordered"
+													type={field?.type}
+													placeholder={field?.title}
+													onChange={(e) => {
+														answers[field?.id] = e.target.value;
+														setAnswers({ ...answers });
+													}}
+												/>
+											)}
+										</div>
 									</div>
-								</div>
-							);
-						})}
+								);
+							})}
 						<hr className="my-5 mt-10" />
-						{!isNFTValid || validatingNFT ? "" : submittingSurvey ? <div className="flex items-center">
+						{anonAadhaar.status === "logging-in" || anonAadhaar?.status === "logged-out" ? "" : submittingSurvey ? <div className="flex items-center">
 							<span className="loading loading-spinner loading-md"></span>
 							<p className="font-semibold text-md ml-2">Submitting survey...</p>
 						</div> : address ? <button className="btn btn-primary btn-lg" onClick={submitSurvey}><FiCheckCircle /> Submit survey</button> : <div className="flex flex-col">
@@ -289,17 +268,17 @@ export default function Survey({ params: { surveyId } }) {
 				</div>
 			)}
 			<ToastContainer />
-			<dialog id="my_modal_2" className="modal">
+			{/* <dialog id="my_modal_2" className="modal">
 				<div className="modal-box w-11/12 max-w-3xl">
 					<h3 className="font-bold text-2xl flex items-center mb-5"><FiKey className="mr-2" /> Access Verification</h3>
 					<div className="flex flex-col items-center">
 						{
-							validatingNFT ? "" : isNFTValid ? <Image src={"/nft-valid.png"} width={500} height={250} /> : <Image src={"/nft-invalid.png"} width={500} height={250} />
+							anonAadhaar.status === "logging-in" ? "" : anonAadhaar?.status === "logged-in" ? <Image src={"/nft-valid.png"} width={500} height={250} /> : <Image src={"/nft-invalid.png"} width={500} height={250} />
 						}
 						{
-							validatingNFT ? <p className="mt-5 text-2xl text-gray-800"><span className="loading loading-spinner loading-md mr-2"></span> Checking NFT...</p> : isNFTValid ? <p className="mt-5 text-2xl text-green-500">✅ NFT verified. You can continue.</p> : <p className="mt-5 text-2xl text-red-500">❌ No valid NFT found in your wallet.</p>
+							anonAadhaar.status === "logging-in" ? <p className="mt-5 text-2xl text-gray-800"><LogInWithAnonAadhaar/></p> : anonAadhaar?.status === "logged-in" ? <p className="mt-5 text-2xl text-green-500">✅ Aadhaar verified. You can continue.</p> : <p className="mt-5 text-2xl text-red-500">❌ Failed to verify Aadhaar.</p>
 						}
-						{validatingNFT ? "" : <div className="mt-10 modal-action flex justify-center ">
+						{anonAadhaar.status === "logging-in" ? "" : <div className="mt-10 modal-action flex justify-center ">
 							<button
 								className={
 									"btn btn-primary w-full "
@@ -308,12 +287,12 @@ export default function Survey({ params: { surveyId } }) {
 									document.getElementById("my_modal_2").close();
 								}}
 							>
-								{isNFTValid ? "Continue" : "Close"}
+								{anonAadhaar?.status === "logged-in" ? "Continue" : "Close"}
 							</button>
 						</div>}
 					</div>
 				</div>
-			</dialog>
+			</dialog> */}
 		</main>
 	);
 }
