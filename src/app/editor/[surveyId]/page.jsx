@@ -67,7 +67,14 @@ export default function Home({ params: { surveyId } }) {
 			survey.chain = chain;
 		}
 
-		console.log(await db.update(survey, "surveys", docId));
+		console.log(survey);
+		console.log(docId);
+
+		console.log(await db.update({
+			title: survey.title,
+			description: survey.description,
+			fields: survey.fields,
+		}, "surveys", docId));
 		toast.success("Survey saved successfully!");
 	};
 
@@ -158,10 +165,16 @@ export default function Home({ params: { surveyId } }) {
 							</div>
 							<div className="row1 title">
 								<div className="flex items-center gap-3">
-									<span className="text-3xl font-bold ">📄 {survey?.title}</span> <FiEdit />
+									<span className="text-3xl font-bold ">📄 <input type="text" value={survey?.title} onChange={(e)=>{
+										survey.title = e.target.value;
+										setSurvey({ ...survey });
+									}}/></span>
 								</div>
 								<div className="flex items-center gap-3 mt-3">
-									<span className="text-xl">{survey?.description}</span> <FiEdit />
+									<span className="text-xl"><textarea value={survey?.description} onChange={(e)=>{
+										survey.description = e.target.value;
+										setSurvey({ ...survey });
+									}}></textarea></span>
 								</div>
 							</div>
 							<div className="inputs">
@@ -169,8 +182,11 @@ export default function Home({ params: { surveyId } }) {
 									return (
 										<div className="inputrow" key={index}>
 											<div className="flex items-center gap-3 mt-5">
-												<label className="text-xl font-semibold">{field?.title}</label>
 												<FiEdit />
+												<input className="text-xl font-semibold" type="text" value={field?.title} onChange={(x) => {
+													field.title = x.target.value;
+													setSurvey({ ...survey });
+												}} />
 											</div>
 											<div className="flex items-center gap-3 mt-3">
 												{field?.type === "multiplechoice" ? (
