@@ -105,7 +105,7 @@ export default function Home({ params: { surveyId } }) {
 					<button className="join-item btn btn-primary btn-lg">Editor</button>
 					<Link href={"/responses/" + surveyId}><button className="join-item btn btn-lg">Responses</button></Link>
 				</div>
-				<div className="items-center flex p-2 bg-neutral rounded-xl">
+				<div className="items-center flex p-2 bg-gray-200 rounded-xl">
 					<p className="cursor-pointer underline text-lg px-3" onClick={() => window.open((new URL(window.location.href)).protocol + "//" + (new URL(window.location.href)).host + "/forms/" + surveyId)}>{(new URL(window.location.href)).protocol + "//" + (new URL(window.location.href)).host + "/forms/" + surveyId}</p>
 					<button className="ml-2 btn btn-square btn-primary" onClick={() => {
 						navigator.clipboard.writeText((new URL(window.location.href)).protocol + "//" + (new URL(window.location.href)).host + `/forms/${surveyId}`);
