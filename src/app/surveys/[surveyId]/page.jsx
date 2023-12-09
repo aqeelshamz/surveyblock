@@ -17,6 +17,7 @@ import { BsCalendar2Date, BsTextareaResize } from "react-icons/bs";
 import { FaRegFile } from "react-icons/fa";
 import { TbPhone } from "react-icons/tb";
 import Image from "next/image";
+import { weavedbContractId } from "../../../utils/util";
 
 export default function Survey({ params: { surveyId } }) {
 	let provider = new ethers.BrowserProvider(window.ethereum);
@@ -33,7 +34,7 @@ export default function Survey({ params: { surveyId } }) {
 	const initDB = async () => {
 		setLoadingSurveyData(true);
 		const db = new WeaveDB({
-			contractTxId: "oj9GzEHQDlK_VQfvGBKFXvyq_zDHdr5m8N0PAU8GysM",
+			contractTxId: weavedbContractId,
 		});
 		await db.init();
 		const survey = (await db.get("surveys", ["id", "==", surveyId]))[0];

@@ -20,10 +20,10 @@ export default function Home({ params: { surveyId } }) {
 		document.getElementById("my_modal_1").close();
 	};
 
-	const [form, setForm] = useState();
-	const [allForms, setAllForms] = useState();
+	const [survey, setSurvey] = useState();
+	const [allSurveys, setAllSurveys] = useState();
 
-	const [loadingFormData, setLoadingFormData] = useState(true);
+	const [loadingSurveyData, setLoadingSurveyData] = useState(true);
 
 	const [db, setDB] = useState();
 
@@ -31,44 +31,44 @@ export default function Home({ params: { surveyId } }) {
 	const [chain, setChain] = useState("polygon");
 
 	const initDB = async () => {
-		setLoadingFormData(true);
+		setLoadingSurveyData(true);
 		const db = new WeaveDB({
 			contractTxId: weavedbContractId,
 		});
 		await db.init();
 		setDB(db);
-		const form = (await db.get("surveys", ["id", "==", surveyId]))[0];
-		setNftContractAddress(form?.nftContractAddress);
-		setChain(form?.chain);
-		setForm(form);
+		const survey = (await db.get("surveys", ["id", "==", surveyId]))[0];
+		setNftContractAddress(survey?.nftContractAddress);
+		setChain(survey?.chain);
+		setSurvey(survey);
 		console.log((await db.get("surveys", ["id", "==", surveyId]))[0]);
-		setLoadingFormData(false);
-		const allForms = await db.cget("surveys");
-		setAllForms(allForms);
+		setLoadingSurveyData(false);
+		const allSurveys = await db.cget("surveys");
+		setAllSurveys(allSurveys);
 	};
 
 	useEffect(() => {
 		initDB();
 	}, []);
 
-	const saveForm = async () => {
-		// console.log(await db.update(form, "forms"));
+	const saveSurvey = async () => {
+		// console.log(await db.update(survey, "surveys"));
 		var docId = "";
-		for (const form of allForms) {
-			if (form?.data?.id === surveyId) {
+		for (const survey of allSurveys) {
+			if (survey?.data?.id === surveyId) {
 				console.log(surveyId);
-				console.log(form?.id);
-				docId = form?.id;
+				console.log(survey?.id);
+				docId = survey?.id;
 			}
 		}
 
 		if (nftContractAddress !== "") {
-			form.nftContractAddress = nftContractAddress;
-			form.chain = chain;
+			survey.nftContractAddress = nftContractAddress;
+			survey.chain = chain;
 		}
 
-		console.log(await db.update(form, "surveys", docId));
-		toast.success("Form saved successfully!");
+		console.log(await db.update(survey, "surveys", docId));
+		toast.success("Survey saved successfully!");
 	};
 
 	// const isContractIdValid = (contractId) => {
@@ -79,18 +79,18 @@ export default function Home({ params: { surveyId } }) {
 	//   return ethereumAddressRegExp.test(contractId);
 	// };
 
-	const deleteForm = async () => {
+	const deleteSurvey = async () => {
 		var docId = "";
-		for (const form of allForms) {
-			if (form?.data?.id === surveyId) {
+		for (const survey of allSurveys) {
+			if (survey?.data?.id === surveyId) {
 				console.log(surveyId);
-				console.log(form?.id);
-				docId = form?.id;
+				console.log(survey?.id);
+				docId = survey?.id;
 			}
 		}
 
 		console.log(await db.delete("surveys", docId));
-		toast.success("Form deleted successfully!");
+		toast.success("Survey deleted successfully!");
 
 		setTimeout(() => {
 			window.location.href = "/home";
@@ -106,23 +106,23 @@ export default function Home({ params: { surveyId } }) {
 					<Link href={"/responses/" + surveyId}><button className="join-item btn btn-lg">Responses</button></Link>
 				</div>
 				<div className="items-center flex p-2 bg-gray-200 rounded-xl">
-					<p className="cursor-pointer underline text-lg px-3" onClick={() => window.open((new URL(window.location.href)).protocol + "//" + (new URL(window.location.href)).host + "/forms/" + surveyId)}>{(new URL(window.location.href)).protocol + "//" + (new URL(window.location.href)).host + "/forms/" + surveyId}</p>
+					<p className="cursor-pointer underline text-lg px-3" onClick={() => window.open((new URL(window.location.href)).protocol + "//" + (new URL(window.location.href)).host + "/surveys/" + surveyId)}>{(new URL(window.location.href)).protocol + "//" + (new URL(window.location.href)).host + "/surveys/" + surveyId}</p>
 					<button className="ml-2 btn btn-square btn-primary" onClick={() => {
-						navigator.clipboard.writeText((new URL(window.location.href)).protocol + "//" + (new URL(window.location.href)).host + `/forms/${surveyId}`);
+						navigator.clipboard.writeText((new URL(window.location.href)).protocol + "//" + (new URL(window.location.href)).host + `/surveys/${surveyId}`);
 						toast.success("Copied to clipboard!");
 					}}><FiCopy /></button>
 				</div>
-				<button className="btn btn-primary btn-lg" onClick={saveForm}><FiSave /> Save</button>
+				<button className="btn btn-primary btn-lg" onClick={saveSurvey}><FiSave /> Save</button>
 			</div>
 			<main className="container mx-auto relative mt-6 ">
-				{loadingFormData ? (
+				{loadingSurveyData ? (
 					<div>
 						<span className="loading loading-spinner loading-lg"></span>
 					</div>
 				) : (
 					<div className="flex flex-col">
 						<div className="border-neutral w-full border-2 h-auto rounded-xl p-5 mb-5 flex flex-col">
-							<span className="text-2xl font-semibold mb-5">🔑 Form Access Requirement</span>
+							<span className="text-2xl font-semibold mb-5">🔑 Survey Access Requirement</span>
 							<label className="mb-2 text-md font-semibold">NFT Contract address</label>
 							<input
 								className="w-full input input-bordered"
@@ -150,7 +150,7 @@ export default function Home({ params: { surveyId } }) {
 						<div className="border-neutral w-full border-2 h-auto rounded-xl p-3 pl-8 mb-20 pb-20">
 							<div className="row0 flex justify-end">
 								<button
-									onClick={deleteForm}
+									onClick={deleteSurvey}
 									className="btn  text-red-500 hover:bg-red-500 hover:border-white border-red-500 btn-outline"
 								>
 									<FiTrash2 className="h-6 w-6 " />
@@ -158,14 +158,14 @@ export default function Home({ params: { surveyId } }) {
 							</div>
 							<div className="row1 title">
 								<div className="flex items-center gap-3">
-									<span className="text-3xl font-bold ">📄 {form?.title}</span> <FiEdit />
+									<span className="text-3xl font-bold ">📄 {survey?.title}</span> <FiEdit />
 								</div>
 								<div className="flex items-center gap-3 mt-3">
-									<span className="text-xl">{form?.description}</span> <FiEdit />
+									<span className="text-xl">{survey?.description}</span> <FiEdit />
 								</div>
 							</div>
 							<div className="inputs">
-								{form?.fields?.map((field, index) => {
+								{survey?.fields?.map((field, index) => {
 									return (
 										<div className="inputrow" key={index}>
 											<div className="flex items-center gap-3 mt-5">
@@ -203,9 +203,9 @@ export default function Home({ params: { surveyId } }) {
 												<button
 													className="btn btn-sm h-[45px] w-[45px] btn-square btn-outline"
 													onClick={() => {
-														//remove field from form
-														form.fields.splice(index, 1);
-														setForm({ ...form });
+														//remove field from survey
+														survey.fields.splice(index, 1);
+														setSurvey({ ...survey });
 													}}
 												>
 													<FiTrash2 />
@@ -229,104 +229,104 @@ export default function Home({ params: { surveyId } }) {
 			{/* modal 1 */}
 			<dialog id="my_modal_1" className="modal">
 				<div className="modal-box max-w-[950px] max-h-[450px]">
-					<h3 className="font-bold text-2xl">Choose form input</h3>
+					<h3 className="font-bold text-2xl">Choose survey input</h3>
 					<div className="flex flex-wrap mt-6 gap-5 text-2xl max-w-full overflow-hidden">
 						<button className="flex btn btn-outline  w-[271px] h-[69px] " onClick={() => {
-							form.fields.push({
+							survey.fields.push({
 								title: "Text Question",
 								type: "text",
 							});
-							setForm({ ...form });
+							setSurvey({ ...survey });
 							document.getElementById("my_modal_1").close();
 						}}>
 							<MdOutlineShortText size={28} />
 							Text
 						</button>
 						<button className="flex btn btn-outline  w-[271px] h-[69px] " onClick={() => {
-							form.fields.push({
+							survey.fields.push({
 								title: "Long text Question",
 								type: "long-text",
 							});
-							setForm({ ...form });
+							setSurvey({ ...survey });
 							document.getElementById("my_modal_1").close();
 						}}>
 							<BsTextareaResize size={28} />
 							Long text
 						</button>
 						<button className="flex btn btn-outline  w-[271px] h-[69px] " onClick={() => {
-							form.fields.push({
+							survey.fields.push({
 								title: "Email",
 								type: "email",
 							});
-							setForm({ ...form });
+							setSurvey({ ...survey });
 							document.getElementById("my_modal_1").close();
 						}}>
 							<HiOutlineMail size={28} />
 							Email
 						</button>
 						<button className="flex btn btn-outline  w-[271px] h-[69px] " onClick={() => {
-							form.fields.push({
+							survey.fields.push({
 								title: "Multiple Choice Question",
 								type: "multiple-choice",
 								choices: ["Option 1", "Option 2", "Option 3"],
 							});
-							setForm({ ...form });
+							setSurvey({ ...survey });
 							document.getElementById("my_modal_1").close();
 						}}>
 							<BiSelectMultiple size={28} />
 							Multiple Choice
 						</button>
 						<button className="flex btn btn-outline  w-[271px] h-[69px] " onClick={() => {
-							form.fields.push({
+							survey.fields.push({
 								title: "Number Question",
 								type: "number",
 							});
-							setForm({ ...form });
+							setSurvey({ ...survey });
 							document.getElementById("my_modal_1").close();
 						}}>
 							<MdOutlineNumbers size={28} />
 							Number
 						</button>
 						<button className="flex btn btn-outline  w-[271px] h-[69px] " onClick={() => {
-							form.fields.push({
+							survey.fields.push({
 								title: "Date",
 								type: "date",
 							});
-							setForm({ ...form });
+							setSurvey({ ...survey });
 							document.getElementById("my_modal_1").close();
 						}}>
 							<BsCalendar2Date size={25} />
 							Date
 						</button>
 						<button className="flex btn btn-outline  w-[271px] h-[69px] " onClick={() => {
-							form.fields.push({
+							survey.fields.push({
 								title: "File Upload",
 								type: "file",
 							});
-							setForm({ ...form });
+							setSurvey({ ...survey });
 							document.getElementById("my_modal_1").close();
 						}}>
 							<FaRegFile size={25} />
 							File
 						</button>
 						<button className="flex btn btn-outline  w-[271px] h-[69px] " onClick={() => {
-							form.fields.push({
+							survey.fields.push({
 								title: "Phone Number",
 								type: "phone",
 							});
-							setForm({ ...form });
+							setSurvey({ ...survey });
 							document.getElementById("my_modal_1").close();
 						}}>
 							<TbPhone size={24} />
 							Phone
 						</button>
 						<button className="flex btn btn-outline  w-[271px] h-[69px] " onClick={() => {
-							form.fields.push({
+							survey.fields.push({
 								title: "Payment",
 								type: "payment",
 								amount: 0.005,
 							});
-							setForm({ ...form });
+							setSurvey({ ...survey });
 							document.getElementById("my_modal_1").close();
 						}}>
 							<MdAttachMoney size={27} className="-mt-1" />
@@ -334,9 +334,9 @@ export default function Home({ params: { surveyId } }) {
 						</button>
 					</div>
 					<div className="modal-action">
-						<form method="dialog">
+						<survey method="dialog">
 							<button className="btn">Close</button>
-						</form>
+						</survey>
 					</div>
 				</div>
 			</dialog>
