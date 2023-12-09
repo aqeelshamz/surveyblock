@@ -51,7 +51,10 @@ export default function RootLayout({ children }) {
   }
 
   return (
-    <html lang="en">
+    <html lang="en" data-theme="light">
+      <head>
+        <title>SurveyBlock</title>
+      </head>
       <body className={inter.className}>
         <WagmiConfig config={wagmiConfig} className="sticky top-0 z-50">
           <RainbowKitProvider chains={chains}>{children}</RainbowKitProvider>
