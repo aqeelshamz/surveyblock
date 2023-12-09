@@ -4,6 +4,7 @@ import Navbar from "../../components/Navbar";
 import WeaveDB from "weavedb-sdk";
 import { useAccount } from "wagmi";
 import { CiCirclePlus } from "react-icons/ci";
+import { FiPlusCircle } from "react-icons/fi";
 
 export default function Home() {
   const [responses, setResponses] = useState([]);
@@ -11,6 +12,8 @@ export default function Home() {
   const [loadingSurveys, setLoadingSurveys] = useState(true);
   const { address } = useAccount();
   const [db, setDB] = useState();
+
+  const [creatingSurvey, setCreatingSurvey] = useState(false);
 
   const [surveys, setSurveys] = useState([]);
 
@@ -61,7 +64,7 @@ export default function Home() {
           <div className="w-full h-full p-5 px-10">
             <p className="text-2xl my-4 mb-7 font-semibold">My surveys ({surveys.length})</p>
             <div className="flex flex-wrap w-full">
-              <div onClick={() => document.getElementById("my_modal_1").showModal()} className="hover:shadow-2xl duration-100 cursor-pointer border-2 flex flex-col min-h-[400px] min-w-[350px] mb-10 mr-10 rounded-3xl shadow-lg overflow-hidden">
+              <div onClick={() => document.getElementById("newsurvey_modal").showModal()} className="hover:shadow-2xl duration-100 cursor-pointer border-2 flex flex-col min-h-[400px] min-w-[350px] mb-10 mr-10 rounded-3xl shadow-lg overflow-hidden">
                 <div className="flex flex-col items-center justify-center w-full h-full">
                   <CiCirclePlus className="h-40 w-40 mb-2" />
                   <p className="font-semibold text-xl">New Survey</p>
@@ -84,6 +87,23 @@ export default function Home() {
           </div>
         )}
       </main>
+      <dialog id="newsurvey_modal" className="modal">
+				<div className="modal-box max-w-xl">
+					<h3 className="flex items-center font-bold text-2xl"><FiPlusCircle className="mr-2" /> Create survey</h3>
+					{creatingSurvey ? (
+						"Creating survey..."
+					) : (
+						<div className="flex mt-6 max-w-fulloverflow-hidden">
+							
+						</div>
+					)}
+					<div className="modal-action">
+						<form method="dialog">
+							<button className="btn">Close</button>
+						</form>
+					</div>
+				</div>
+			</dialog>
     </div>
   )
 }
