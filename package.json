@@ -15,11 +15,12 @@
     "react-dom": "^18",
     "react-icons": "^4.12.0",
     "react-toastify": "^9.1.3",
-    "weavedb-sdk": "^0.37.2",
     "viem": "~1.19.4",
-    "wagmi": "~1.4.7"
+    "wagmi": "~1.4.7",
+    "weavedb-sdk": "^0.37.2"
   },
   "devDependencies": {
+    "@types/react": "18.2.42",
     "autoprefixer": "^10.0.1",
     "daisyui": "^4.4.19",
     "eslint": "^8",
