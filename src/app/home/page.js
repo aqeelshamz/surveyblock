@@ -24,7 +24,7 @@ export default function Home() {
   const initDB = async () => {
     setLoadingSurveys(true);
     const db = new WeaveDB({
-      contractTxId: "oj9GzEHQDlK_VQfvGBKFXvyq_zDHdr5m8N0PAU8GysM",
+      contractTxId: "-8FM6hm-v1I2baCD0_axEvJP7qQj3rNYz_4_crHsRfI",
     });
     console.log("DB initing...")
     console.log(await db.init());
