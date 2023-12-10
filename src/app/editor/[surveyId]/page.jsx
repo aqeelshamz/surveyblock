@@ -1,6 +1,6 @@
 "use client";
 import Navbar from "../../../components/Navbar";
-import { FiEdit, FiTrash2, FiCopy, FiSave, FiPlusCircle } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiCopy, FiSave, FiPlusCircle, FiCreditCard, FiAtSign } from "react-icons/fi";
 import { FaRegFile } from "react-icons/fa";
 import { TbPhone } from "react-icons/tb";
 import { BsTextareaResize, BsCalendar2Date } from "react-icons/bs";
@@ -128,7 +128,7 @@ export default function Home({ params: { surveyId } }) {
 					</div>
 				) : (
 					<div className="flex flex-col">
-						<div className="border-neutral w-full border-2 h-auto rounded-xl p-5 mb-5 flex flex-col">
+						{/* <div className="border-neutral w-full border-2 h-auto rounded-xl p-5 mb-5 flex flex-col">
 							<span className="text-2xl font-semibold mb-5">🔑 Survey Access Requirement</span>
 							<label className="mb-2 text-md font-semibold">NFT Contract address</label>
 							<input
@@ -153,7 +153,7 @@ export default function Home({ params: { surveyId } }) {
 								<option value="ethereum">Ethereum</option>
 								<option value="sepolia">Sepolia</option>
 							</select>
-						</div>
+						</div> */}
 						<div className="border-neutral w-full border-2 h-auto rounded-xl p-3 pl-8 mb-20 pb-20">
 							<div className="row0 flex justify-end">
 								<button
@@ -165,13 +165,13 @@ export default function Home({ params: { surveyId } }) {
 							</div>
 							<div className="row1 title">
 								<div className="flex items-center gap-3">
-									<span className="text-3xl font-bold ">📄 <input type="text" value={survey?.title} onChange={(e)=>{
+									<span className="text-3xl font-bold w-full flex">📄 <input className="ml-2 w-full" type="text" value={survey?.title} onChange={(e) => {
 										survey.title = e.target.value;
 										setSurvey({ ...survey });
-									}}/></span>
+									}} /></span>
 								</div>
 								<div className="flex items-center gap-3 mt-3">
-									<span className="text-xl"><textarea value={survey?.description} onChange={(e)=>{
+									<span className="text-xl w-full flex"><textarea className="w-full" value={survey?.description} onChange={(e) => {
 										survey.description = e.target.value;
 										setSurvey({ ...survey });
 									}}></textarea></span>
@@ -182,8 +182,18 @@ export default function Home({ params: { surveyId } }) {
 									return (
 										<div className="inputrow" key={index}>
 											<div className="flex items-center gap-3 mt-5">
-												<FiEdit />
-												<input className="text-xl font-semibold" type="text" value={field?.title} onChange={(x) => {
+												{({
+													"text": <MdOutlineShortText className="mr-2" />,
+													"longtext": <BsTextareaResize className="mr-2" />,
+													"multiplechoice": <BiSelectMultiple className="mr-2" />,
+													"numbers": <MdOutlineNumbers className="mr-2" />,
+													"date": <BsCalendar2Date className="mr-2" />,
+													"file": <FaRegFile className="mr-2" />,
+													"phone": <TbPhone className="mr-2" />,
+													"payment": <FiCreditCard className="mr-2" />,
+													"email": <FiAtSign className="mr-2" />,
+												})[field?.type] ?? <MdOutlineShortText className="mr-2" />}
+												<input className="text-xl font-semibold w-full" type="text" value={field?.title} onChange={(x) => {
 													field.title = x.target.value;
 													setSurvey({ ...survey });
 												}} />

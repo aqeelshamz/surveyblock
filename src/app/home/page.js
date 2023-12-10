@@ -6,9 +6,10 @@ import { useAccount } from "wagmi";
 import { CiCirclePlus } from "react-icons/ci";
 import { FiBox, FiFileText, FiPlusCircle } from "react-icons/fi";
 import { v4 as uuidv4 } from "uuid";
-import { weavedbContractId, bgColors } from "../../utils/util";
+import { weavedbContractId, bgColors, formGenerationPrompt } from "../../utils/util";
 import Section from "../../components/Animate";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import OpenAI from "openai";
 
 export default function Home() {
   const [responses, setResponses] = useState([]);
@@ -75,6 +76,58 @@ export default function Home() {
     }, 5000);
   };
 
+  const [generatingForm, setGeneratingForm] = useState(false);
+  const [prompt, setPrompt] = useState("");
+
+  const generateForm = async () => {
+    setGeneratingForm(true);
+    const openai = new OpenAI({
+      apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+      dangerouslyAllowBrowser: true,
+    });
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        { role: "system", content: formGenerationPrompt },
+        { role: "user", content: prompt },
+      ],
+    });
+
+    console.log("completion: ", completion);
+
+    var data = JSON.parse(completion.choices[0].message.content);
+
+    if (data) {
+      //Save form to database
+      const surveyId = uuidv4();
+      const surveyData = {
+        id: surveyId,
+        author: db.signer(),
+        title: data?.title,
+        description: data?.description,
+        fields: data?.fields,
+        responses: 0,
+      };
+
+      const tx = await db.add(surveyData, "surveys");
+      console.log(tx);
+
+      console.log("Saved to DB");
+
+      document.getElementById("newsurvey_modal").close();
+
+      setTimeout(() => {
+        window.location.href = "/editor/" + surveyId;
+      }, 5000);
+    } else {
+      console.log("Error generating survey");
+      s;
+    }
+
+    setGeneratingForm(false);
+  };
+
   useEffect(() => {
     initDB();
   }, []);
@@ -131,6 +184,17 @@ export default function Home() {
             "Creating survey..."
           ) : (
             <div className="flex flex-col mt-6 max-w-fulloverflow-hidden">
+              <p className="mb-2 font-semibold">Generate using AI</p>
+              <textarea className="textarea textarea-bordered" placeholder="Your prompt here.." value={prompt} onChange={(x) => setPrompt(x.target.value)}></textarea>
+              <button className="btn btn-primary mb-4 mt-4" onClick={() => {
+                if (generatingForm) {
+                  return;
+                }
+
+                generateForm();
+              }}>✨ Generate Survey Form</button>
+              <hr className="my-4" />
+              <p className="mb-2 font-semibold">Or, create manually</p>
               <p className="mb-2">Survey Name</p>
               <input type="text" placeholder="Type here" className="input input-bordered w-full mb-5" value={newSurveyName} onChange={(x) => setNewSurveyName(x.target.value)} />
               <p className="mb-2">Description</p>
@@ -141,7 +205,12 @@ export default function Home() {
             <form method="dialog">
               <button className="btn">Close</button>
             </form>
-            <button className="btn btn-primary ml-2" onClick={createSurvey}>Create Survey</button>
+            <button className={"btn btn-primary ml-2 " + (generatingForm ? "opacity-50" : "")} onClick={() => {
+              if (generatingForm) {
+                return;
+              }
+              createSurvey();
+            }}>Create Survey</button>
           </div>
         </div>
       </dialog>
