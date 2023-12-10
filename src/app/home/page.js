@@ -186,13 +186,13 @@ export default function Home() {
             <div className="flex flex-col mt-6 max-w-fulloverflow-hidden">
               <p className="mb-2 font-semibold">Generate using AI</p>
               <textarea className="textarea textarea-bordered" placeholder="Your prompt here.." value={prompt} onChange={(x) => setPrompt(x.target.value)}></textarea>
-              <button className="btn btn-primary mb-4 mt-4" onClick={() => {
+              <button className={"btn btn-primary mb-4 mt-4 " + (generatingForm ? "opacity-50" : "")} onClick={() => {
                 if (generatingForm) {
                   return;
                 }
 
                 generateForm();
-              }}>✨ Generate Survey Form</button>
+              }}>{generatingForm ? <span class="loading loading-spinner loading-md"></span> : "✨ Generate Survey Form"}</button>
               <hr className="my-4" />
               <p className="mb-2 font-semibold">Or, create manually</p>
               <p className="mb-2">Survey Name</p>
