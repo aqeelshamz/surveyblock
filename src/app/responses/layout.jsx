@@ -1,7 +1,7 @@
 export default function RootLayout({ children }) {
   return (
-    <main>{children}</main>
+    <div>
+      {children}
+    </div>
   )
 }
-
-export const dynamic = 'force-dynamic'

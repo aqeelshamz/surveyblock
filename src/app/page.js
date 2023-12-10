@@ -15,10 +15,10 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="w-full h-[100vh] flex items-center justify-center">
+    <main className="w-full h-[100vh] flex items-center justify-center bg-gradient-to-tr from-[#0b0e3b] to-[#1c134c]">
       <div className="flex flex-col items-center">
-        <h1 className="text-4xl font-bold flex items-center"><FiBox className="mr-2"/> SurveryBlock</h1>
-        <h1 className="text-xl mt-2">Decentralised Survey</h1>
+        <h1 className="font-bold flex items-center text-8xl text-white"><FiBox className="mr-2"/> SurveyBlock</h1>
+        <h1 className="text-4xl mt-6 text-white">Decentralised Survey Creator</h1>
         {domLoaded ? (
           <div className="mt-10">
             {address ? (

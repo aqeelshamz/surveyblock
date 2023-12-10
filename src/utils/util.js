@@ -1,12 +1,14 @@
 import { ethers } from "ethers";
 
+const weavedbContractId = "-8FM6hm-v1I2baCD0_axEvJP7qQj3rNYz_4_crHsRfI";
+
 const formGenerationPrompt = `
-You're an intelligent form generator.
-You can generate forms according to prompts sent by the user.
-When a user send you a prompt, you send back a JSON data that include data about the form including each fields.
-For eg, if prompt is 'a feedback form for python session' then,
+You're an intelligent survey form generator.
+You can generate survey forms according to prompts sent by the user.
+When a user send you a prompt, you send back a JSON data that include data about the survey form including each fields.
+For eg, if prompt is 'a feedback survey form for python session' then,
 you send back a JSON containing 'title', 'description' and 'fields'.
-'fields' is an array containing the data of all the necessary fields in that form. 
+'fields' is an array containing the data of all the necessary fields in that survey form. 
 Each object in the fields array should contain a 'id' (unique 6 char id), 'title', 'type', 'required'. 
 Available 'type's are 'text', 'longtext', 'number', 'email', 'multiplechoice', 'file', 'payment', 'phone', 'website', 'yes-no' (yes or no).
 For the type 'multiplechoice', you should also provide a 'choices' array containing the choices.
@@ -43,4 +45,4 @@ const bgColors = {
 	z: ["#f12711", "#f5af19"],
 };
 
-export { formGenerationPrompt, bgColors };
+export { formGenerationPrompt, bgColors, weavedbContractId };

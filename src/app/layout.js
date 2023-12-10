@@ -62,6 +62,7 @@ export default function RootLayout({ children }) {
     <html lang="en" data-theme="light">
       <head>
         <title>SurveyBlock</title>
+        <link rel="icon" href="/block.png" />
       </head>
       <body className={inter.className}>
         <WagmiConfig config={wagmiConfig} className="sticky top-0 z-50">
