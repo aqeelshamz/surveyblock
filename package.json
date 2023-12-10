@@ -16,6 +16,7 @@
     "coffee-script": "^1.12.7",
     "ethers": "^6.8.1",
     "framer-motion": "^10.16.16",
+    "it-all": "^3.0.4",
     "next": "14.0.1",
     "openai": "^4.20.1",
     "pino-pretty": "^10.2.3",
